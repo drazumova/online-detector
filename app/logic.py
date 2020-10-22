@@ -9,15 +9,18 @@ class Status(Enum):
     UNKNOWN = 4
 
 class StatisticsManager:
-    away_time = 15 * 60
-    offline_time = 30 * 60
+    minute = 60
+    away_time = 15 * minute
+    offline_time = 30 * minute
 
     def __init__(self):
-        self._helper = DatabaseHelper()
+        self._connectionManager = DatabaseConnectionManager()
+        connection = self._connectionManager.create_connection()
+        self._storage = Database(connection)
 
     def get_user_status(self, id):
         current_time = datetime.now()
-        last_time = self._helper.get_user_time(id)
+        last_time = self._storage.get_user_time(id)
         if last_time is None:
             return Status.UNKNOWN
         delta = (current_time - last_time).total_seconds()
@@ -29,5 +32,5 @@ class StatisticsManager:
 
     def update_time(self, id):
         current_time = datetime.now()
-        self._helper.upsert_user_time(id, current_time)
+        self._storage.upsert_user_time(id, current_time)
     
