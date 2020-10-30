@@ -39,18 +39,19 @@ class DatabaseConnectionManager:
 
 class Database:
     _user_oline_table = 'user_online_time'
+    _request_log_table = 'request_log'
 
     def __init__(self, connection):
         self._connection = connection
     
     def upsert_user_time(self, id, time):
         request = ("INSERT INTO {0}(id, last_time) VALUES({1}, timestamp '{2}')" +
-        " ON CONFLICT (id) DO UPDATE SET last_time = EXCLUDED.last_time").format(self._user_oline_table, id, time)
+        " ON CONFLICT (id) DO UPDATE SET last_time = EXCLUDED.last_time;").format(self._user_oline_table, id, time)
         self._connection.execute(request)
         self._connection.commit()
 
     def get_user_time(self, id):
-        request = "SELECT last_time FROM {} WHERE id = {}".format(self._user_oline_table, id)
+        request = "SELECT last_time FROM {} WHERE id = {};".format(self._user_oline_table, id)
         self._connection.execute(request)
         result = self._connection.fetch()
         if not result:
@@ -59,3 +60,13 @@ class Database:
             print("Error on getting select result", result) #todo
             return None
         return result[0][0]
+    
+    def safe_info(self, json_data, column_list):
+        values = []
+        for column in column_list:
+            values.append(json_data[column])
+        
+        request = ("INSERT INTO {}({}) VALUES ({});").format(self._request_log_table, ', '.join(column_list), ', '.join(values))
+        self._connection.execute(request)
+        self._connection.commit()
+
