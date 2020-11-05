@@ -1,6 +1,6 @@
+from users_db import *
 from enum import Enum
 from datetime import datetime
-from db import *
 
 class Status(Enum):
     ONLINE = 1
@@ -14,8 +14,8 @@ class StatisticsManager:
     offline_time = 30 * minute
 
     def __init__(self):
-        self._connectionManager = DatabaseConnectionManager()
-        connection = self._connectionManager.create_connection()
+        self._connectionManager = ConnectionManager()
+        connection = self._connectionManager.create_database_connection()
         self._storage = Database(connection)
 
     def get_user_status(self, id):
