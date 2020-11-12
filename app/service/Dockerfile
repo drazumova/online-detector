@@ -1,0 +1,26 @@
+FROM ubuntu:20.04
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y && apt-get install -y wget ca-certificates gnupg2
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN apt-get update -y && apt install -y postgresql sudo
+COPY info/requirements.txt requirements.txt
+RUN apt-get install -y python3-pip libpq-dev && pip3 install -r requirements.txt
+
+
+COPY service/ app/
+COPY connection/ connection/
+COPY service/nginx.conf nginx/nginx.conf
+
+##install openresty
+RUN apt-get update -y && apt-get -y install libpcre3-dev libssl-dev perl make build-essential curl
+RUN wget -qO - https://openresty.org/package/pubkey.gpg | apt-key add -
+RUN apt-get -y install software-properties-common
+RUN add-apt-repository -y "deb http://openresty.org/package/ubuntu focal main" && apt-get update -y
+RUN apt-get install -y openresty
+RUN mkdir nginx/logs && touch nginx/logs/access.log nginx/logs/error.log
+
+EXPOSE 91
+
+ENTRYPOINT [ "/bin/bash", "-c", "service postgresql start && sudo -u postgres psql -c \"select 1;\"", "python3 app/wsgi.py", "cd nginx && PATH=/usr/local/openresty/nginx/sbin:\$PATH && export PATH && nginx -p `pwd`/ -c nginx.conf"]
