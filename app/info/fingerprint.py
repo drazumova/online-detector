@@ -19,22 +19,23 @@ class FingerprintCounter:
 
     def count(self, json_data):
         string_value = ""
-        print(json_data.keys())
-        args = intersection(json_data.keys(), self.args)
+        # print(json_data.keys())
+        args = set(json_data.keys()).intersection(self.args)
         for arg in args:
             string_value += json_data[arg]
         return self.get_hash(string_value)
 
 class FingerprintManager:
     def __init__(self):
-        connection = ConnectionManager().create_database_connection()
-        self._database = Database(connection)
         self._counter = FingerprintCounter()
 
     def get_id(self, data):
-        fp = self._counter(data)
-        id = self._database.get_id_by_value(fp)
-        if id is None:
-            self._database.add_value(fp)
-            return get_id(self, data) #todo
-        return id
+        connection = ConnectionManager().create_database_connection()
+        database = Database(connection)
+        
+        fp = self._counter.count(data)
+        id = database.get_id_by_value(fp)
+        if id is None or len(id) != 1:
+            database.add_value(fp)
+            return self.get_id(data) #todo
+        return id[0]

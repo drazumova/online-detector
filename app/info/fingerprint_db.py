@@ -13,12 +13,13 @@ class Database:
         self.init_table()
 
     def init_table(self):
-        request = ("CREATE TABLE IF NOT EXISTS {} ({} int PRIMARY KEY, {} text UNIQUE);").format(self._fingerprint_table, self._id, self._fingerprint)
+        request = ("CREATE TABLE IF NOT EXISTS {} ({} SERIAL PRIMARY KEY, {} text UNIQUE);").format(self._fingerprint_table, self._id, self._fingerprint)
         self._connection.execute(request)
         self._connection.commit()
     
+
     def get_id_by_value(self, fingerprint):
-        request = ("SELECT {} FROM {} WHERE {} = {};").format(self._id, self._fingerprint_table, self._fingerprint, fingerprint)
+        request = ("SELECT {} FROM {} WHERE {} = '{}';").format(self._id, self._fingerprint_table, self._fingerprint, fingerprint)
         self._connection.execute(request)
         result = self._connection.fetch()
         if not result:
