@@ -9,4 +9,4 @@ COPY connection/ connection/
 
 EXPOSE 8091
 
-ENTRYPOINT [ "/bin/bash", "-c", "service postgresql start", "sudo -u postgres psql -c \"ALTER USER postgres PASSWORD 'postgres';\"", "python3 app/wsgi.py" ]
+ENTRYPOINT [ "/bin/bash", "-c", "python3 app/wsgi.py" ]

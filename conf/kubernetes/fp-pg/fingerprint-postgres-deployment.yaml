@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fingerprint-postgres-deploypment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fingerprint-postgres
+  template:
+    metadata:
+      labels:
+        app: fingerprint-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: fingerprint-postgres-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres
+      volumes:
+        - name: postgres
+          persistentVolumeClaim:
+            claimName: fingerprint-postgres-pv-claim
