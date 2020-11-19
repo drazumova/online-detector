@@ -1,0 +1,12 @@
+FROM ubuntu:20.04
+ARG DEBIAN_FRONTEND=noninteractive
+
+COPY info/requirements.txt requirements.txt
+RUN apt-get update -y && apt-get install -y python3-pip libpq-dev && pip3 install -r requirements.txt
+
+COPY info/ app/
+COPY connection/ connection/
+
+EXPOSE 8091
+
+ENTRYPOINT [ "/bin/bash", "-c", "service postgresql start", "sudo -u postgres psql -c \"ALTER USER postgres PASSWORD 'postgres';\"", "python3 app/wsgi.py" ]
