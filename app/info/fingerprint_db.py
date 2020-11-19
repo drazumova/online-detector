@@ -2,6 +2,8 @@ import sys
 sys.path.append('connection/')
 
 from connection import *
+from fp_connection import *
+
 class Database:
     _fingerprint_table = 'fingerprints'
     _id = 'id'

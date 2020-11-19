@@ -30,7 +30,7 @@ class FingerprintManager:
         self._counter = FingerprintCounter()
 
     def get_id(self, data):
-        connection = ConnectionManager().create_database_connection()
+        connection = FingerpritConnectionManager().create_database_connection()
         database = Database(connection)
         
         fp = self._counter.count(data)

@@ -11,12 +11,12 @@ class Main:
         self.manager = StatisticsManager()
         self.id_service_connection = ConnectionManager().create_service_connection()
 
-    def GET(self, id=None):
+    def GET(self, id=None, *args, **post):
         if id is None:
             id = self.get_id(self.get_headers())
         return self.manager.get_user_status(id).name
 
-    def POST(self, id=None):
+    def POST(self, id=None, *args, **post):
         if id is None:
             id = self.get_id(self.get_headers())
         self.manager.update_time(id)
