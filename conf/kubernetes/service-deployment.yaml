@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: service-deployment
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: service
@@ -13,7 +14,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: service:latest
+        image: service:4.0
         imagePullPolicy: IfNotPresent
         ports:
             - containerPort: 81

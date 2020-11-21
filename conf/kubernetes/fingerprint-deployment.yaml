@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: fingerprint
-        image: fingerprint:latest
+        image: fingerprint:4.0
         imagePullPolicy: IfNotPresent
         ports:
             - containerPort: 8091

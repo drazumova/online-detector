@@ -15,10 +15,11 @@ class StatisticsManager:
 
     def __init__(self):
         self._connectionManager = ConnectionManager()
+
+    def get_user_status(self, id):
         connection = self._connectionManager.create_database_connection()
         self._storage = Database(connection)
 
-    def get_user_status(self, id):
         current_time = datetime.now()
         last_time = self._storage.get_user_time(id)
         if last_time is None:
@@ -31,6 +32,8 @@ class StatisticsManager:
         return Status.OFFLINE
 
     def update_time(self, id):
+        connection = self._connectionManager.create_database_connection()
+        self._storage = Database(connection)
         current_time = datetime.now()
         self._storage.upsert_user_time(id, current_time)
     

@@ -10,6 +10,6 @@ if __name__=='__main__':
             'tools.response_headers.headers': [('Content-Type', 'text/plain')],
         }
     }
-    cherrypy.config.update({'server.socket_host': '127.0.0.1',
-                        'server.socket_port': 8090})
-    cherrypy.quickstart(Main(), '/', conf)
+    # cherrypy.config.update({'server.socket_host': '0.0.0.0',
+                        # 'server.socket_port': 8090})
+    cherrypy.quickstart(Main(), '/', {'global': {'server.socket_host':'0.0.0.0','server.socket_port': 8090}})

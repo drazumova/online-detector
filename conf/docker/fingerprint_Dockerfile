@@ -7,6 +7,6 @@ RUN apt-get update -y && apt-get install -y python3-pip libpq-dev && pip3 instal
 COPY info/ app/
 COPY connection/ connection/
 
-EXPOSE 8091
+# EXPOSE 8091
 
 ENTRYPOINT [ "/bin/bash", "-c", "python3 app/wsgi.py" ]
