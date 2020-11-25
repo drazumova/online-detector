@@ -5,7 +5,6 @@ metadata:
   labels:
     app: fingerprint-postgres
 spec:
-  type: NodePort
   ports:
     - port: 5433
       targetPort: 5432
