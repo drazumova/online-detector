@@ -8,25 +8,28 @@ class Database:
     _id = 'id'
     _time = 'last_time'
 
-    def __init__(self, connection):
-        self._connection = connection
+    def __init__(self, create_connection):
+        self._create_connection = create_connection  
         self.init_table()
 
     def init_table(self):
+        connection = self._create_connection()
         request = ("CREATE TABLE IF NOT EXISTS {} ({} int UNIQUE, {} timestamp)").format(self._user_oline_table, self._id, self._time)
-        self._connection.execute(request)
-        self._connection.commit()
+        connection.execute(request)
+        connection.commit()
     
     def upsert_user_time(self, id, time):
+        connection = self._create_connection()
         request = ("INSERT INTO {0}({4}, {3}) VALUES({1}, timestamp '{2}')" +
         " ON CONFLICT ({4}) DO UPDATE SET {3} = EXCLUDED.{3};").format(self._user_oline_table, id, time, self._time, self._id)
-        self._connection.execute(request)
-        self._connection.commit()
+        connection.execute(request)
+        connection.commit()
 
     def get_user_time(self, id):
+        connection = self._create_connection()
         request = "SELECT last_time FROM {} WHERE id = {};".format(self._user_oline_table, id)
-        self._connection.execute(request)
-        result = self._connection.fetch()
+        connection.execute(request)
+        result = connection.fetch()
         if not result:
             return None
         if len(result) != 1:

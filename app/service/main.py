@@ -9,7 +9,7 @@ import cherrypy
 class Main:
     def __init__(self):
         self.manager = StatisticsManager()
-        self.id_service_connection = ConnectionManager().create_service_connection()
+        self.id_service_conf = ConnectionConfigurationManager.create_service_conf()
 
     def GET(self, id=None, *args, **post):
         if id is None:
@@ -27,4 +27,5 @@ class Main:
         return data
 
     def get_id(self, headers):
-        return self.id_service_connection.get_id(headers)
+        connection = self.id_service_conf.create_connection()
+        return connection.get_id(headers)

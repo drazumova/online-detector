@@ -28,14 +28,13 @@ class FingerprintCounter:
 class FingerprintManager:
     def __init__(self):
         self._counter = FingerprintCounter()
+        conf = FingerpritConnectionConfigurationManager.create_database_conf()
+        self._database = Database(conf.create_connection)
 
     def get_id(self, data):
-        connection = FingerpritConnectionManager().create_database_connection()
-        database = Database(connection)
-        
         fp = self._counter.count(data)
-        id = database.get_id_by_value(fp)
+        id = self._database.get_id_by_value(fp)
         if id is None or len(id) != 1:
-            database.add_value(fp)
+            self._database.add_value(fp)
             return self.get_id(data) #todo
         return id[0]

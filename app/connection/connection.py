@@ -3,22 +3,39 @@ import yaml
 from db_connection import DatabaseConnection
 from service_connection import FingerprintServiceConnection
 
-class ConnectionManager:
-    def __init__(self, db_config_path = 'connection/db_config.yaml', service_config_path = 'connection/service_config.yaml'):
-        with open(db_config_path, 'r') as config: 
-            args = yaml.load(config) # todo
-            self._username = args['username']
-            self._db_host = args['host']
-            self._db_port = args['port']
+class ConnectionConfigurationManager:
+    def create_service_conf(filename="conf/fingerprint_service_config.yaml"):
+        return ServiceConnectionConfig(filename)
         
-        with open(service_config_path, 'r') as config:
-            args = yaml.load(config) # todo
-            self._service_host = args['host']
-            self._service_port = args['port']
-
-
-    def create_database_connection(self):
-        return DatabaseConnection(self._username, self._db_host, self._db_port)
+    def create_database_conf(filename="conf/service_db_config.yaml"):
+        return DatabaseConnectionConfig(filename)
     
-    def create_service_connection(self):
-        return FingerprintServiceConnection(self._service_host, self._service_port)
+
+class ConnectionConfig:
+    def __init__(self, filename):
+        with open(filename, 'r') as config: 
+            args = yaml.load(config) # todo
+            self.host = args['host']
+            self.port = args['port']
+
+    def create_connection(self):
+        pass
+
+
+class DatabaseConnectionConfig(ConnectionConfig):
+    def __init__(self, filename):
+        super.__init__(self, filename)
+        with open(filename, 'r') as config: 
+            args = yaml.load(config) # todo
+            self.username = args['username']
+
+    def create_connection(self, class_constructor):
+        return DatabaseConnection(self.username, self.host, self.port)
+
+class ServiceConnectionConfig(ConnectionConfig):
+    def __init__(self):
+        super.__init__(self, filename)
+
+    def create_connection(self, class_constructor):
+        return FingerprintServiceConnection(self.username, self.host, self.port)
+        

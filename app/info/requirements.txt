@@ -3,3 +3,4 @@ psycopg2
 requests
 pyyaml
 xxhash
+redis

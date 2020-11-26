@@ -1,4 +1,4 @@
-from users_db import *
+from database import *
 from enum import Enum
 from datetime import datetime
 
@@ -14,12 +14,9 @@ class StatisticsManager:
     offline_time = 30 * minute
 
     def __init__(self):
-        self._connectionManager = ConnectionManager()
+        self._storage = DatabaseFactory.create_default()
 
     def get_user_status(self, id):
-        connection = self._connectionManager.create_database_connection()
-        self._storage = Database(connection)
-
         current_time = datetime.now()
         last_time = self._storage.get_user_time(id)
         if last_time is None:
@@ -32,8 +29,6 @@ class StatisticsManager:
         return Status.OFFLINE
 
     def update_time(self, id):
-        connection = self._connectionManager.create_database_connection()
-        self._storage = Database(connection)
         current_time = datetime.now()
         self._storage.upsert_user_time(id, current_time)
     
