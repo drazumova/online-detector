@@ -16,6 +16,3 @@ class FingerprintServiceConnection:
         response = self.session.post(url, data=json.dumps(data))
         print("aaa", response.text)
         return json.loads(response.text)['id']
-
-
-

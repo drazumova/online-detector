@@ -1,8 +1,8 @@
 import sys
 sys.path.append('connection/')
 
-from logic import *
-from connection import *
+from statistics_manager import *
+from connection_configuration import *
 import cherrypy
 
 @cherrypy.expose

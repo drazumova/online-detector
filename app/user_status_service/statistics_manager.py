@@ -1,4 +1,4 @@
-from database import *
+from database_factory import *
 from enum import Enum
 from datetime import datetime
 
@@ -31,4 +31,3 @@ class StatisticsManager:
     def update_time(self, id):
         current_time = datetime.now()
         self._storage.upsert_user_time(id, current_time)
-    

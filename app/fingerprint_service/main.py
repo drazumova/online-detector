@@ -2,9 +2,9 @@ import sys
 import json
 sys.path.append('connection/')
 
-from fingerprint import *
+from fingerprint_manager import *
 import cherrypy
-from service_connection import FingerprintServiceConnection as FC
+from fingerprint_service_connection import FingerprintServiceConnection as FC
 
 @cherrypy.expose
 class Main:

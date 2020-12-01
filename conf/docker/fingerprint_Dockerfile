@@ -1,10 +1,10 @@
 FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
-COPY info/requirements.txt requirements.txt
+COPY fingerprint_service/requirements.txt requirements.txt
 RUN apt-get update -y && apt-get install -y python3-pip libpq-dev && pip3 install -r requirements.txt
 
-COPY info/ app/
+COPY fingerprint_service/ app/
 COPY connection/ connection/
 
 # EXPOSE 8091

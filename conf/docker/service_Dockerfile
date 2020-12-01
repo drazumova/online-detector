@@ -6,9 +6,9 @@ COPY info/requirements.txt requirements.txt
 RUN apt-get install -y python3-pip libpq-dev && pip3 install -r requirements.txt
 
 
-COPY service/ app/
+COPY user_status_service/ app/
 COPY connection/ connection/
-COPY service/nginx.conf nginx/nginx.conf
+COPY user_status_service/nginx.conf nginx/nginx.conf
 
 
 RUN apt-get update -y && apt-get -y install libpcre3-dev libssl-dev perl make build-essential curl
