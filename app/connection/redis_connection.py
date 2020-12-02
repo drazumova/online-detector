@@ -7,6 +7,8 @@ import redis
 import atexit
 
 class RedisConnection(DatabaseConnection):
+    time_to_expire_s = 60
+
     def __init__(self, host, port, db):
         self._connection = redis.Redis(host=host, port=port)
         atexit.register(self.close)
@@ -15,7 +17,7 @@ class RedisConnection(DatabaseConnection):
         self._connection.exit()
     
     def add(self, key, value):
-        self._connection.set(key, value)
+        self._connection.set(key, value, ex=time_to_expire_s)
 
     def get(self, key):
         return self._connection.get(key)
