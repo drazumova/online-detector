@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: service:4.0
+        image: service:5.0
         imagePullPolicy: IfNotPresent
         ports:
             - containerPort: 81

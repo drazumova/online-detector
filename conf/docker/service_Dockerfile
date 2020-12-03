@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y && apt-get install -y wget ca-certificates gnupg2
-COPY info/requirements.txt requirements.txt
+COPY fingerprint_service/requirements.txt requirements.txt
 RUN apt-get install -y python3-pip libpq-dev && pip3 install -r requirements.txt
 
 
@@ -11,7 +11,7 @@ COPY connection/ connection/
 COPY user_status_service/nginx.conf nginx/nginx.conf
 
 
-RUN apt-get update -y && apt-get -y install libpcre3-dev libssl-dev perl make build-essential curl
+RUN apt-get update -y && apt-get -y install libpcre3-dev libssl-dev perl make build-essential curl redis-server
 RUN wget -qO - https://openresty.org/package/pubkey.gpg | apt-key add -
 RUN apt-get -y install software-properties-common
 RUN add-apt-repository -y "deb http://openresty.org/package/ubuntu focal main" && apt-get update -y
@@ -21,13 +21,5 @@ RUN mkdir logs && touch logs/access.log logs/error.log
 EXPOSE 81
 EXPOSE 8090
 
-# ENTRYPOINT [ "/bin/sh", "-c", "cd nginx && PATH=/usr/local/openresty/nginx/sbin:\$PATH && export PATH && nginx -p / -c nginx.conf", "cd .. && python3 app/wsgi.py"]
-# CMD "/usr/local/openresty/nginx/sbin/nginx -p / -c nginx/nginx.conf && python3 app/wsgi.py"
-# CMD "/bin/python3 /app/wsgi.py"
-# RUN ls app   
-#ENTRYPOINT [ "/bin/sh", "-c", "/usr/local/openresty/nginx/sbin/nginx -p / -c nginx/nginx.conf"]
-# CMD ["/usr/local/openresty/nginx/sbin/nginx -p `pwd`/ -c nginx/nginx.conf", "python3", "app/wsgi.py"]
-# CMD ["/bin/echo", "Running"]
-# ENTRYPOINT ["/bin/sh", "-c", "/usr/local/openresty/nginx/sbin/nginx -p `pwd`/ -c nginx/nginx.conf", "python3 app/wsgi.py"]
 RUN ["chmod", "+x", "/app/start.sh"]
 ENTRYPOINT ["/bin/bash", "-c", "app/start.sh"]
