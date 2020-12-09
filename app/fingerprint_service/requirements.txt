@@ -1,6 +1,9 @@
 cherrypy
 psycopg2
+psycopg2-binary
 requests
 pyyaml
 xxhash
 redis
+redis-py-cluster
+
