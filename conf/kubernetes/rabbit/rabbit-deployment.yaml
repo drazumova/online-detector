@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbit-deploypment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbit
+  template:
+    metadata:
+      labels:
+        app: rabbit
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.8
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5672
+          volumeMounts:
+            - mountPath: /var/lib/rabbit/data
+              name: rabbit
+      volumes:
+        - name: rabbit
+          persistentVolumeClaim:
+            claimName: rabbitmq-claim

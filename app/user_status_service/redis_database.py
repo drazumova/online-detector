@@ -2,7 +2,7 @@ from users_database import *
 from datetime import datetime
 
 class RedisDatabase(Database):
-    def __init__(self, connection_factory, database): # todo: replace with config object
+    def __init__(self, connection_factory, database):
         self._connection = connection_factory.create_connection()
         self._database = database
     

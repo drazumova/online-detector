@@ -6,4 +6,5 @@ pyyaml
 xxhash
 redis
 redis-py-cluster
-
+clickhouse-driver[lz4]
+pika

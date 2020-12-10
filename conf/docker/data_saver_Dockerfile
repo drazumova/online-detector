@@ -1,0 +1,10 @@
+FROM ubuntu:20.04
+ARG DEBIAN_FRONTEND=noninteractive
+
+COPY fingerprint_service/requirements.txt requirements.txt
+RUN apt-get update -y && apt-get install -y python3-pip redis-server && pip3 install -r requirements.txt
+
+COPY data_processing/ app/
+COPY connection/ connection/
+
+ENTRYPOINT [ "/bin/bash", "-c", "python3 app/data_saver.py" ]

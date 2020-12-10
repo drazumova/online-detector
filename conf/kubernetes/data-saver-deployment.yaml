@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-saver-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-saver
+  template:
+    metadata:
+      labels:
+        app: data-saver
+    spec:
+      containers:
+      - name: data-saver
+        image: fingerprint:5.0
+        imagePullPolicy: IfNotPresent
