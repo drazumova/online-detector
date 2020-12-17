@@ -28,6 +28,7 @@ class Main:
 
     def get_headers(self):
         data = cherrypy.request.headers
+        print(data)
         return data
 
     def get_id(self, headers):

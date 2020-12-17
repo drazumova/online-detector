@@ -19,7 +19,7 @@ class ClickHouseConnectionConfig(DatabaseConnectionConfig):
             self.host = args['host']
 
     def create_connection(self):
-        return RedisConnection(self.host)
+        return ClickHouseConnection(self.host)
 
 class ClickHouseConnectionConfigurationManager(ConnectionConfigurationManager):
     def create_database_conf(filename="connection/conf/clickhouse_config.yaml"):

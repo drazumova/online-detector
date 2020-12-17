@@ -1,3 +1,4 @@
+import json
 import sys
 sys.path.append('connection/')
 
@@ -13,18 +14,22 @@ class DataSaver:
 
     def store(self, data):
         id = data.keys()[0]
+        print("keeys = ", data.keys())
         data = data[id]
         args = set(data.keys()).intersection(ClickHouseDatabase.fileds_list)
         fields = [data[arg] for arg in args]
         self.database.store(id, data)
         
 
-def get(ch, method, properties, body):
+def get(ch, method, properties, body):  
     data_saver = DataSaver() #todo
-    print(body)
-    data_saver.store(body)
+    print("body = ", body)
+    data = json.loads(body)
+    data_saver.store(data)
 
 if __name__== '__main__':
-    connection = RabbitConnectionConfigurationManager.create_rabbit_conf()
+    print("Started")
+    conf = RabbitConnectionConfigurationManager.create_rabbit_conf()
+    connection = conf.create_connection(RabbitConnectionConfig.storing_queue)
     connection.start_consuming(RabbitConnectionConfig.storing_queue, get)
 

@@ -1,5 +1,4 @@
 cherrypy
-psycopg2
 psycopg2-binary
 requests
 pyyaml
@@ -7,4 +6,5 @@ xxhash
 redis
 redis-py-cluster
 clickhouse-driver[lz4]
+infi.clickhouse_orm==1.0.4
 pika
