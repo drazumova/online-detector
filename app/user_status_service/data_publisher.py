@@ -4,6 +4,8 @@ sys.path.append('connection/')
 from rabbit_connection import *
 from rabbit_connection import RabbitConnectionConfig
 
+import json
+
 class DataPublisher:
     def __init__(self, out_queue = RabbitConnectionConfig.geoip_queue):
         self._out = out_queue
@@ -11,7 +13,6 @@ class DataPublisher:
 
     def publish(self, id, data):
         connection = self.connection_conf.create_connection(self._out)
-        data = str({id: data})
-        print("publish data", data)
-        connection.basic_publish(self._out, data)
+        data["Fp_Id"] = id
+        connection.basic_publish(self._out, json.dumps(data))
         

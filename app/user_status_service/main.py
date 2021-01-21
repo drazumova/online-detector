@@ -24,11 +24,11 @@ class Main:
             id = self.get_id(headers)
         self.manager.update_time(id)
         self.publisher.publish(id, headers)
+        # print(str(headers), flush=True)
         return "OK"
 
     def get_headers(self):
         data = cherrypy.request.headers
-        print(data)
         return data
 
     def get_id(self, headers):

@@ -1,1 +1,3 @@
 host: clickhouse-storage
+user: clickhouse_operator
+password: clickhouse_operator_password
