@@ -26,6 +26,8 @@ class GEOIpBlock:
     def get(self, ch, method, properties, body):
         data = json.loads(body)
         key = 'X-Real-Ip'
+        if 'X-Test-Ip' in data.keys():
+            key = 'X-Test-Ip'
         Logger.log("geoip get data " + str(data))
         info = self.get_data(data[key])
         fp_id = data["Fp_Id"]

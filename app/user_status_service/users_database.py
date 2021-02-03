@@ -17,6 +17,7 @@ class Database: # rename
         request = ("CREATE TABLE IF NOT EXISTS {} ({} int UNIQUE, {} timestamp)").format(self._user_oline_table, self._id, self._time)
         connection.execute(request)
         connection.commit()
+        connection.close()
     
     def upsert_user_time(self, id, time):
         connection = self._connection_factory.create_connection()
@@ -24,12 +25,14 @@ class Database: # rename
         " ON CONFLICT ({4}) DO UPDATE SET {3} = EXCLUDED.{3};").format(self._user_oline_table, id, time, self._time, self._id)
         connection.execute(request)
         connection.commit()
+        connection.close()
 
     def get_user_time(self, id):
         connection = self._connection_factory.create_connection()
         request = "SELECT last_time FROM {} WHERE id = {};".format(self._user_oline_table, id)
         connection.execute(request)
         result = connection.fetch()
+        connection.close()
         if not result:
             return None
         if len(result) != 1:

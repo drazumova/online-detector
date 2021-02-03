@@ -19,6 +19,7 @@ class Database:
         request = ("CREATE TABLE IF NOT EXISTS {} ({} SERIAL PRIMARY KEY, {} text UNIQUE);").format(self._fingerprint_table, self._id, self._fingerprint)
         connection.execute(request)
         connection.commit()
+        connection.close()
     
 
     def get_id_by_value(self, fingerprint):
@@ -26,6 +27,7 @@ class Database:
         request = ("SELECT {} FROM {} WHERE {} = '{}';").format(self._id, self._fingerprint_table, self._fingerprint, fingerprint)
         connection.execute(request)
         result = connection.fetch()
+        connection.close()
         if not result:
             return None
         return result[0]
@@ -35,6 +37,7 @@ class Database:
         request = ("INSERT INTO {}({}) VALUES ({});").format(self._fingerprint_table, self._fingerprint, fingerprint)
         connection.execute(request)
         connection.commit()
+        connection.close()
 
     def _safe_info(self, json_data, column_list):
         connection = self._connection_factory.create_connection()
@@ -45,3 +48,4 @@ class Database:
         request = ("INSERT INTO {}({}) VALUES ({});").format(self._fingerprint_table, ', '.join(column_list), ', '.join(values))
         connection.execute(request)
         connection.commit()
+        connection.close()
