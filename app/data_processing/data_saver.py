@@ -5,6 +5,7 @@ sys.path.append('connection/')
 from clickhouse_database import *
 from clickhouse_connection import *
 from rabbit_connection import *
+from geoip_block import *
 
 from logger import Logger
 
@@ -12,7 +13,7 @@ from logger import Logger
 class DataSaver:
     def __init__(self):
         self.clickhouse_conf = ClickHouseConnectionConfigurationManager.create_database_conf()
-        self.database = ClickHouseDatabase(self.clickhouse_conf)
+        self.database = ClickHouseDatabase(self.clickhouse_conf, GEOIpBlock._fields)
 
     def store(self, data):
         id = data['Fp_Id']

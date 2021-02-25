@@ -30,6 +30,7 @@ class GEOIpBlock:
             key = 'X-Test-Ip'
         Logger.log("geoip get data " + str(data))
         info = self.get_data(data[key])
+        Logger.log(str(info))
         fp_id = data["Fp_Id"]
         for field in self._fields:
             if field in info.keys():
@@ -39,6 +40,8 @@ class GEOIpBlock:
     def get_data(self, ip):
         session = requests.Session()
         response = session.get(self._service_url + ip)
+        if not response:
+            return {}
         Logger.log("geoip response " + str(response.text))
         data = json.loads(response.text)
         if data['status'] != 'success':
