@@ -1,10 +1,5 @@
-import json
-import sys
-sys.path.append('connection/')
-
+from connection.clickhouse_connection import ClickHouseConnectionConfigurationManager
 from clickhouse_database import *
-from clickhouse_connection import *
-from rabbit_connection import *
 from geoip_block import *
 
 from logger import Logger
@@ -26,7 +21,8 @@ def get(ch, method, properties, body):
     Logger.log("body = " + str(data))
     data_saver.store(data)
 
-if __name__== '__main__':
+
+if __name__ == '__main__':
     Logger.log("DataSaver start")
     conf = RabbitConnectionConfigurationManager.create_rabbit_conf()
     connection = conf.create_connection(RabbitConnectionConfig.storing_queue)

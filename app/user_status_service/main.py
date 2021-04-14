@@ -1,10 +1,7 @@
-import sys
-sys.path.append('connection/')
-
 from statistics_manager import *
-from connection_configuration import *
 from data_publisher import *
 import cherrypy
+
 
 @cherrypy.expose
 class Main:
@@ -27,7 +24,8 @@ class Main:
         
         return "OK"
 
-    def get_headers(self):
+    @staticmethod
+    def get_headers():
         data = cherrypy.request.headers
         print(str(data), flush=True)
         return data

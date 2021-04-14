@@ -5,7 +5,7 @@ COPY fingerprint_service/requirements.txt requirements.txt
 RUN apt-get update -y && apt-get install -y python3-pip redis-server && pip3 install -r requirements.txt
 
 COPY fingerprint_service/ app/
-COPY connection/ connection/
+COPY connection/ app/connection/
 
 # EXPOSE 8091
 

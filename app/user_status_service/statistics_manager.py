@@ -2,11 +2,13 @@ from database_factory import *
 from enum import Enum
 from datetime import datetime
 
+
 class Status(Enum):
     ONLINE = 1
     AWAY = 2
     OFFLINE = 3
     UNKNOWN = 4
+
 
 class StatisticsManager:
     minute = 60
@@ -22,7 +24,7 @@ class StatisticsManager:
         if last_time is None:
             return Status.UNKNOWN
         delta = (current_time - last_time).total_seconds()
-        if (delta < self.away_time):
+        if delta < self.away_time:
             return Status.ONLINE
         elif delta < self.offline_time:
             return Status.AWAY

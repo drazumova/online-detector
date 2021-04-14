@@ -14,5 +14,5 @@ spec:
     spec:
       containers:
       - name: data-saver
-        image: data_saver:5.0
+        image: data_saver:6.0
         imagePullPolicy: IfNotPresent

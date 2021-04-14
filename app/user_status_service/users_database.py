@@ -1,9 +1,4 @@
-import sys
-sys.path.append('connection/')
-
-from connection_configuration import *
-
-class Database: # rename
+class Database:
     _user_oline_table = 'user_online_time'
     _id = 'id'
     _time = 'last_time'
@@ -28,14 +23,15 @@ class Database: # rename
         connection.close()
 
     def get_user_time(self, id):
+        print("here")
         connection = self._connection_factory.create_connection()
         request = "SELECT last_time FROM {} WHERE id = {};".format(self._user_oline_table, id)
         connection.execute(request)
         result = connection.fetch()
         connection.close()
-        if not result:
+        if result is None:
             return None
         if len(result) != 1:
-            print("Error on getting select result", result) #todo
+            print("Error on getting select result", result)
             return None
         return result[0][0]

@@ -1,14 +1,9 @@
-import sys
-sys.path.append('connection/')
-
-from connection_configuration import *
-
 from logger import Logger
 
 
 class ClickHouseDatabase:
     _table = "storage"
-    _fignerprint_id = "Fingerprint_ID"
+    _fingerprint_id = "Fingerprint_ID"
     _fields_list = ['User-Agent', 'Accept-Language', 'Accept', 'Accept-Encoding', 'Dnt', 'Remote-Addr', 'X-Real-Ip']
      
     def __init__(self, connection_factory, additional_fields=[]):
@@ -19,8 +14,8 @@ class ClickHouseDatabase:
     def init_table(self):
         connection = self._connection_factory.create_connection()
         # connection.execute("drop table {}".format(self._table))
-        columns = "{} UInt64, {}".format(self._fignerprint_id, ", ".join(map(lambda x: x + " String", self._all_fields)))
-        request = ("CREATE TABLE IF NOT EXISTS {} ({}) ENGINE = MergeTree() ORDER BY {}").format(self._table, columns.replace("-", "_"), self._fignerprint_id)
+        columns = "{} UInt64, {}".format(self._fingerprint_id, ", ".join(map(lambda x: x + " String", self._all_fields)))
+        request = ("CREATE TABLE IF NOT EXISTS {} ({}) ENGINE = MergeTree() ORDER BY {}").format(self._table, columns.replace("-", "_"), self._fingerprint_id)
         Logger.log(request)
         connection.execute(request)
     
@@ -29,7 +24,7 @@ class ClickHouseDatabase:
         keys = [key for key in data.keys() if key in allowed_keys]
         fields = [data[key] for key in keys]
         connection = self._connection_factory.create_connection()
-        column_list = self._fignerprint_id + ", " + ", ".join(keys).replace("-", "_")
+        column_list = self._fingerprint_id + ", " + ", ".join(keys).replace("-", "_")
         value_list =  ", ".join(map(lambda x: "'" + x + "'", fields))
         request = "INSERT INTO {}({}) VALUES ({}, {})".format(self._table, column_list, fingerprint_id, value_list)
         Logger.log(request)

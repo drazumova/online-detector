@@ -5,6 +5,6 @@ COPY fingerprint_service/requirements.txt requirements.txt
 RUN apt-get update -y && apt-get install -y python3-pip && pip3 install -r requirements.txt
 
 COPY data_processing/ app/
-COPY connection/ connection/
+COPY connection/ app/connection/
 
 ENTRYPOINT [ "/bin/bash", "-c", "python3 app/geoip_block.py" ]

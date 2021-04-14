@@ -1,6 +1,7 @@
 import psycopg2
 import atexit
 
+
 class DatabaseConnection:
     def __init__(self, username, host, port):
         self._connection = psycopg2.connect(database=username, user=username, password=username, host=host, port=port)

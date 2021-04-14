@@ -1,7 +1,9 @@
 import atexit
 import pika
+import yaml
 
-from connection_configuration import *
+from connection.connection_configuration import *
+
 
 class RabbitConnection:
     def __init__(self, host):
@@ -23,13 +25,14 @@ class RabbitConnection:
         self.channel.basic_consume(queue=key, auto_ack=True, on_message_callback=callback)
         self.channel.start_consuming()
 
+
 class RabbitConnectionConfig(ConnectionConfig):
     storing_queue = "clickhouse"
     geoip_queue = "geoip"
 
     def __init__(self, filename):
         with open(filename, 'r') as config:
-            args = yaml.load(config) # todo
+            args = yaml.load(config)
             self.host = args['host']
 
     def create_connection(self, queue):
@@ -39,5 +42,6 @@ class RabbitConnectionConfig(ConnectionConfig):
     
 
 class RabbitConnectionConfigurationManager(ConnectionConfigurationManager):
-    def create_rabbit_conf(filename="connection/conf/rabbit_config.yaml"):
+    @staticmethod
+    def create_rabbit_conf(filename="app/connection/conf/rabbit_config.yaml"):
         return RabbitConnectionConfig(filename)

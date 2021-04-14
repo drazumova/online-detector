@@ -1,6 +1,7 @@
 import requests
 import json
 
+
 class FingerprintServiceConnection:
     headers_key = "passed_headers"
 

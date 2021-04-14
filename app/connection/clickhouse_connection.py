@@ -1,9 +1,8 @@
 from clickhouse_driver import Client
-import sys
-sys.path.append('connection/')
+from connection.connection_configuration import *
+from connection.db_connection import *
+import yaml
 
-from connection_configuration import *
-from db_connection import *
 
 class ClickHouseConnection(DatabaseConnection):
     def __init__(self, host, user, password):
@@ -12,10 +11,11 @@ class ClickHouseConnection(DatabaseConnection):
     def execute(self, request):
         return self._client.execute(request)
 
+
 class ClickHouseConnectionConfig(DatabaseConnectionConfig):
     def __init__(self, filename):
         with open(filename, 'r') as config: 
-            args = yaml.load(config) # todo
+            args = yaml.load(config)
             self.host = args['host']
             self.user = args['user']
             self.password = args['password']
@@ -23,6 +23,8 @@ class ClickHouseConnectionConfig(DatabaseConnectionConfig):
     def create_connection(self):
         return ClickHouseConnection(self.host, user=self.user, password=self.password)
 
+
 class ClickHouseConnectionConfigurationManager(ConnectionConfigurationManager):
-    def create_database_conf(filename="connection/conf/clickhouse_config.yaml"):
+    @staticmethod
+    def create_database_conf(filename="app/connection/conf/clickhouse_config.yaml"):
         return ClickHouseConnectionConfig(filename)
