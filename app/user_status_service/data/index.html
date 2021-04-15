@@ -1,0 +1,32 @@
+<script>
+  function initFingerprintJS() {
+    const fpPromise = FingerprintJS.load();
+
+    fpPromise
+      .then(fp => fp.get())
+      .then(result => {
+        const visitorId = result.visitorId;
+        console.log(visitorId);
+        document.writeln(visitorId);
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "/update", true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+            document.writeln(xhr.response);
+        }
+  }
+        xhr.send(JSON.stringify(result));
+});
+  }
+  function main() {
+
+  }
+</script>
+<script
+  async
+  src="//cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"
+  onload="initFingerprintJS()"
+></script>
+
+<button onclick="initFingerprintJS()">Click</button>

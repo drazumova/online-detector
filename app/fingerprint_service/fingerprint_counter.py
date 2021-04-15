@@ -1,25 +1,27 @@
-import xxhash
+from fingerprint_paramter import *
 
 
 class FingerprintCounter:
-    args = ['User-Agent', 'Accept-Language', 'Accept', 'Accept-Encoding', 'Dnt', 'Remote-Addr']
-    
-    # def process_logs(self, filename):
-    #     all_requests = parse(filename, self.args)
-    #     print(all_requests)
-    #     for i in range(len(all_requests)):
-    #         id = self.count(all_requests[i])
-    #         all_requests[i]["id"] = id
-    #
-    #     return all_requests
+    header_args = ['User-Agent', 'Accept-Language', 'Accept', 'Accept-Encoding', 'Dnt', 'Remote-Addr']
+    js_args = ['audio', 'fonts', 'colorDepth', 'deviceMemory', 'screenResolution', 'hardwareConcurrency',
+               'openDatabase', 'touchSupport', 'indexedDB']
+
+    def __init__(self):
+        self.parameter_parsers = list(map(ParameterParser, self.header_args)) \
+                                 + list(map(JSParameterParser, self.js_args)) \
+                                 + [CanvasParameterParser('canvas')]
 
     @staticmethod
     def get_hash(string):
-        return xxhash.xxh32(string).intdigest()
+        return xxhash.xxh64_hexdigest(string)
+
+    def get_params(self, data):
+        # print(data.keys())
+        return [parser.parse_from_json(data) for parser in self.parameter_parsers]
 
     def calculate(self, json_data):
-        string_value = ""
-        args = set(json_data.keys()).intersection(self.args)
-        for arg in args:
-            string_value += json_data[arg]
-        return self.get_hash(string_value)
+        params = self.get_params(json_data)
+        param_string = str([Parameter.to_string(value) for value in params])
+        resulting_hash = self.get_hash(param_string)
+        print(resulting_hash, str(params))
+        return resulting_hash
