@@ -1,4 +1,3 @@
-
 class Database:
     _fingerprint_table = 'fingerprints'
     _id = 'id'
@@ -43,7 +42,7 @@ class Database:
             values.append(json_data[column])
 
         request = ("INSERT INTO {}({}) VALUES ( {});").format(self._fingerprint_table, ', '.join(column_list),
-                                                             ', '.join(values))
+                                                              ', '.join(values))
         connection.execute(request)
         connection.commit()
         connection.close()

@@ -13,4 +13,4 @@ class Main:
         headers = json.loads(cherrypy.request.body.read())
         if headers is None or FingerprintServiceConnection.headers_key not in headers.keys():
             return None
-        return json.dumps({'id': self.manager.get_id(headers[FingerprintServiceConnection.headers_key])})
+        return json.dumps({'id': self.manager.get_id_with_closest(headers[FingerprintServiceConnection.headers_key])})

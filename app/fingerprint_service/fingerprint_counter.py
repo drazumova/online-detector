@@ -15,12 +15,15 @@ class FingerprintCounter:
     def get_hash(string):
         return xxhash.xxh64_hexdigest(string)
 
-    def get_params(self, data):
+    def parameter_names(self):
+        return [i.name for i in self.parameter_parsers]
+
+    def _get_params(self, data):
         # print(data.keys())
         return [parser.parse_from_json(data) for parser in self.parameter_parsers]
 
     def calculate(self, json_data):
-        params = self.get_params(json_data)
+        params = self._get_params(json_data)
         param_string = str([Parameter.to_string(value) for value in params])
         resulting_hash = self.get_hash(param_string)
         print(resulting_hash, str(params))
