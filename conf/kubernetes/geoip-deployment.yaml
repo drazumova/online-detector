@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geoip-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geoip-block
+  template:
+    metadata:
+      labels:
+        app: geoip-block
+    spec:
+      containers:
+      - name: geoip-block
+        image: geoip:6.0
+        imagePullPolicy: IfNotPresent

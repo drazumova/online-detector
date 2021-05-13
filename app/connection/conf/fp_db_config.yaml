@@ -1,0 +1,5 @@
+database: postgres
+username: postgres
+password: postgres
+host: fingerprint-postgres
+port: 5433

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fingerprint
+spec:
+  selector:
+    app: fingerprint
+  ports:
+    - port: 8091
+      targetPort: 8091

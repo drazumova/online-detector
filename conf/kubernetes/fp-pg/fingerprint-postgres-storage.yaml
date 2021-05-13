@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: fingerprint-postgres-pv-volume
+  labels:
+    type: local
+    app: fingerprint-postgres
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/data/fp/"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fingerprint-postgres-pv-claim
+  labels:
+    app: fingerprint-postgres
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
