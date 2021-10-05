@@ -8,3 +8,4 @@ redis-py-cluster
 clickhouse-driver[lz4]
 infi.clickhouse_orm==1.0.4
 pika
+flask

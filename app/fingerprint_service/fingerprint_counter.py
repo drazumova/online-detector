@@ -19,8 +19,10 @@ class FingerprintCounter:
         return [i.name for i in self.parameter_parsers]
 
     def _get_params(self, data):
-        # print(data.keys())
         return [parser.parse_from_json(data) for parser in self.parameter_parsers]
+
+    def string_representation(self, data):
+        return {parser.name : parser.parse_from_json(data) for parser in self.parameter_parsers}
 
     def calculate(self, json_data):
         params = self._get_params(json_data)
