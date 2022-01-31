@@ -1,12 +1,12 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY fingerprint_service/requirements.txt requirements.txt
-RUN apt-get update -y && apt-get install -y python3-pip redis-server && pip3 install -r requirements.txt
+RUN apt-get update -y && apt-get install -y apt-utils python3-pip redis-server && pip3 install -r requirements.txt
 
 COPY fingerprint_service/ app/
 COPY connection/ app/connection/
 
-# EXPOSE 8091
+EXPOSE 8091
 
 ENTRYPOINT [ "/bin/bash", "-c", "python3 app/wsgi.py" ]
