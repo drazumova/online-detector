@@ -15,6 +15,18 @@ class Database:
         connection.commit()
         connection.close()
 
+    def get_by_where_clause(self, params_map):
+        connection = self._connection_factory.create_connection()
+        where_clause = " AND ".join(["{} = {}".format(a, b) for (a, b) in params_map])
+        request = ("SELECT {} FROM {} WHERE {};").format(self._id, self._fingerprint_table, where_clause)
+        connection.execute(request)
+        result = connection.fetch()
+        connection.close()
+        print("Database result", result)
+        if result is None or len(result) != 1:
+            return None
+        return result
+
     def get_id_by_value(self, fingerprint):
         connection = self._connection_factory.create_connection()
         request = ("SELECT {} FROM {} WHERE {} = '{}';").format(self._id, self._fingerprint_table, self._fingerprint,

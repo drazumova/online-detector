@@ -37,7 +37,10 @@ class Main:
     def update(self):
         data = cherrypy.request.json
         headers = self.get_headers()
-        params = {**data, **headers}
+        params = {**data['components'], **headers}
+        # print("included fields", params.keys())
+        # print(params["components"].keys())
+        # print(params)
         fp_id = self.get_id(params)
         status = self.manager.get_user_status(fp_id).name
         self.manager.update_time(fp_id)

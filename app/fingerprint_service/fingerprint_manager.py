@@ -21,12 +21,12 @@ class FingerprintManager:
         return id[0]
 
     def get_id_with_closest(self, data):
-        # fp = self._counter.calculate(data)
-        possible_fp = self._value_database.find_closest(data, 3)
-        if possible_fp is None:
-            return self.get_id(data)
-        id = self._database.get_id_by_value(possible_fp)
-        print("got id", id)
-        if id is None:
+        fp = self._counter.calculate_stable(data)
+        possible_fp = self._value_database.find_all_by_stable(fp)
+        print("FP possible rows: ", possible_fp)
+        if possible_fp is None or len(possible_fp) == 0:
             print("ERROR empty existing data")
-        return id[0]
+            self._value_database.add(fp, data)
+            return self._value_database.find_all_by_stable(fp)  # todo
+
+        return possible_fp

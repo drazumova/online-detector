@@ -3,7 +3,9 @@ from fingerprint_paramter import Parameter
 
 class ValuesDatabase:
     _fingerprint_table = 'fingerprint_values'
-    _id = 'fingerprint'
+    _id = "id"
+    _fp = 'fingerprint'
+    _stable_fp = 'stable_fp'
 
     def __init__(self, parameter_parsers, connection_factory):
         self._connection_factory = connection_factory
@@ -14,8 +16,9 @@ class ValuesDatabase:
     def init_params_table(self):
         connection = self._connection_factory.create_connection()
         columns = ', '.join(["{} text".format(i) for i in self.params])
-        request = ("CREATE TABLE IF NOT EXISTS {} ({} text PRIMARY KEY, {});").format(
-            self._fingerprint_table, self._id, columns)
+        connection.execute("drop table if exists {}".format(self._fingerprint_table))
+        request = ("CREATE TABLE IF NOT EXISTS {} ({} SERIAL PRIMARY KEY, {} text, {} text, {});").format(
+            self._fingerprint_table, self._id, self._fp, self._stable_fp, columns)
         print("creating table", request)
         connection.execute(request)
         connection.commit()
@@ -57,6 +60,24 @@ class ValuesDatabase:
         if result is None or len(result) < 1:
             return None
         return result[0]
+
+    def find_all_by_stable(self, stable_fp):
+        print("got stable fp", stable_fp, flush=True)
+        where_statement = ' {} = {} '.format(self._stable_id, stable_fp)
+        select_statement = '{}, {}, {}'.format(self._id, self._stable_id, ", ".join(self._variable_params))
+        query = 'SELECT {} FROM {} WHERE {}'.format(select_statement, self._fingerprint_table, where_statement)
+        print("got query ", query)
+
+        connection = self._connection_factory.create_connection()
+        connection.execute(query)
+        result = connection.fetch()
+        connection.close()
+
+        for r in result:
+            print(r)
+
+        return result
+
 
 
 class ValuesGroupsDatabase(ValuesDatabase):

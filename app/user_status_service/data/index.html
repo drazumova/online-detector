@@ -16,7 +16,18 @@
             document.writeln(xhr.response);
         }
   }
-        xhr.send(JSON.stringify(result));
+
+  const gl = document.createElement("canvas").getContext("webgl");
+  result.webGL_vendor = gl.getParameter(gl.VENDOR);
+  result.webGL_renderer = gl.getParameter(gl.RENDERER);
+
+  const ext = gl.getExtension("WEBGL_debug_renderer_info");
+  if (ext) {
+    result.webGL_vendor = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL);
+    result.webGL_renderer = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+  }
+
+  xhr.send(JSON.stringify(result));
 });
   }
   function main() {
