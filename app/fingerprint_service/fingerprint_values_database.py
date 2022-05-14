@@ -1,3 +1,7 @@
+import logging
+
+import numpy as np
+
 from fingerprint_paramter import Parameter
 
 
@@ -6,11 +10,14 @@ class ValuesDatabase:
     _id = "id"
     _fp = 'fingerprint'
     _stable_fp = 'stable_fp'
+    _weights = []
 
-    def __init__(self, parameter_parsers, connection_factory):
+    def __init__(self, parameter_parsers, unstable_parameter_parsers,  connection_factory):
         self._connection_factory = connection_factory
         self.parsers = parameter_parsers
-        self.params = list(map(lambda x: x.name.replace('-', ''), parameter_parsers))
+        self._unstable_columns = list(map(lambda x: x.name.replace('-', '').lower(), unstable_parameter_parsers))
+        self._unstable_parsers = unstable_parameter_parsers
+        self.params = list(map(lambda x: x.name.replace('-', '').lower(), parameter_parsers))
         self.init_params_table()
 
     def init_params_table(self):
@@ -19,7 +26,7 @@ class ValuesDatabase:
         connection.execute("drop table if exists {}".format(self._fingerprint_table))
         request = ("CREATE TABLE IF NOT EXISTS {} ({} SERIAL PRIMARY KEY, {} text, {} text, {});").format(
             self._fingerprint_table, self._id, self._fp, self._stable_fp, columns)
-        print("creating table", request)
+        logging.info("creating table", request)
         connection.execute(request)
         connection.commit()
         connection.close()
@@ -32,10 +39,15 @@ class ValuesDatabase:
 
     def add(self, fp, values):
         connection = self._connection_factory.create_connection()
-        column_values = self._values_to_str(fp, values)
-        print("Add values", column_values)
-        request = "INSERT INTO {}( VALUES ('{}');".format(self._fingerprint_table,
-                                                          self._fingerprint_table, column_values)
+        column_values = ', '.join(["'{}'".format(Parameter.to_string(p.parse_from_json(values))) for p in self.parsers])
+        logging.info("Add values", column_values)
+
+        columns = ', '.join([i for i in self.params])
+        column_names = "{}, {}".format(self._stable_fp, columns)
+        logging.info(column_names, column_values)
+        request = "INSERT INTO {} ({}) VALUES ('{}', {});".format(self._fingerprint_table,
+                                                                    column_names,
+                                                                    fp, column_values)
         connection.execute(request)
         connection.commit()
         connection.close()
@@ -49,7 +61,8 @@ class ValuesDatabase:
             .format(function_params, function_value)
         print("constructed function = ", function)
         all_columns = ", ".join(self.params)
-        query = "SELECT {} FROM {} ORDER BY distance({}) LIMIT {}".format(self._id, self._fingerprint_table,
+        select_statement = ""
+        query = "SELECT {} FROM {} ORDER BY distance({}) LIMIT {}".format(select_statement, self._fingerprint_table,
                                                                           all_columns, limit)
         request = function + query
         connection = self._connection_factory.create_connection()
@@ -59,14 +72,29 @@ class ValuesDatabase:
         print("result", result)
         if result is None or len(result) < 1:
             return None
+
         return result[0]
 
-    def find_all_by_stable(self, stable_fp):
-        print("got stable fp", stable_fp, flush=True)
-        where_statement = ' {} = {} '.format(self._stable_id, stable_fp)
-        select_statement = '{}, {}, {}'.format(self._id, self._stable_id, ", ".join(self._variable_params))
+    def closest_for(self, data, result):
+        weights = np.array([0] + self._weights)
+        current = np.array([0] + [Parameter.to_string(i.parse_from_json(data)) for i in self._unstable_parsers])
+        print("result closest", current, flush=True)
+        distances = np.dot((np.array(result) == current), weights)
+        index = np.argmin(distances)
+        print("closest index", index, flush=True)
+        print("closet values", result[index])
+        if distances[index] > 1:
+            return None
+        return result[index][0]
+
+    def find_all_by_stable(self, stable_fp, data, columns=""):
+        if len(columns) == 0:
+            columns = ", ".join(self._unstable_columns)
+        logging.info("got stable fp ", stable_fp)
+        where_statement = ' {} = \'{}\' '.format(self._stable_fp, stable_fp)
+        select_statement = '{}, {}'.format(self._id, columns)
         query = 'SELECT {} FROM {} WHERE {}'.format(select_statement, self._fingerprint_table, where_statement)
-        print("got query ", query)
+        logging.info("got query ", query)
 
         connection = self._connection_factory.create_connection()
         connection.execute(query)
@@ -74,9 +102,12 @@ class ValuesDatabase:
         connection.close()
 
         for r in result:
-            print(r)
+            logging.info("got result row", r)
 
-        return result
+        if result is None or len(result) == 0:
+            return None
+
+        return self.closest_for(data, result)
 
 
 
@@ -100,7 +131,7 @@ class ValuesGroupsDatabase(ValuesDatabase):
         columns = ', '.join(["{} text".format(i) for i in self.params])
         request = ("CREATE TABLE IF NOT EXISTS {} ({} text PRIMARY KEY, {});").format(
             self._fingerprint_table, self._id, columns)
-        print("creating table", request)
+        logging.info("creating table", request)
         connection.execute(request)
         connection.commit()
         connection.close()

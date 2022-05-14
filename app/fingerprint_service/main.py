@@ -13,9 +13,9 @@ class Main:
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
-        print("FP MAIN POST DATA:", cherrypy.request.json, flush=True)
         headers = cherrypy.request.json
         # if headers is None or FingerprintServiceConnection.headers_key not in headers.keys():
         #     return None
         # return json.dumps({'id': self.manager.get_id_with_closest(headers[FingerprintServiceConnection.headers_key])})
+        logging.info("FP service got headers" + headers)
         return json.dumps({'id': self.manager.get_id_with_closest(headers)})

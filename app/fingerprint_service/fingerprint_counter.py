@@ -1,4 +1,5 @@
 from fingerprint_paramter import *
+import numpy as np
 
 
 class FingerprintCounter:
@@ -11,18 +12,18 @@ class FingerprintCounter:
     stable_params = ['osCpu', 'hardwareConcurrency', 'touchSupport', 'screenResolution', 'domBlockers',
                      'audio', 'languages', 'colorDepth', 'indexedDB', 'openDatabase', 'cpuClass', 'vendor',
                      'vendorFlavors', 'cookiesEnabled', 'invertedColors', 'forcedColors', 'canvas',
-                     'reducedMotion', 'hdr', 'fonts']
+                     'reducedMotion', 'hdr', 'fonts', 'timezone', 'webGL_vendor', 'webGL_renderer']
     variable_params = list(set(js_args) - set(stable_params))
 
     def __init__(self):
-        self.parameter_parsers = list(map(ParameterParser, self.header_args)) \
+        self.parameter_parsers = list(map(JSParameterParser, self.header_args)) \
                                  + list(map(JSParameterParser, self.js_args)) \
                                  + [CanvasParameterParser('canvas')]
-        self.stable_param_parsers = list(map(JSParameterParser, self.stable_params))
+        self.stable_param_parsers = list(map(JSParameterParser, self.stable_params)) + [CanvasParameterParser('canvas')]
 
     @staticmethod
     def get_hash(string):
-        return xxhash.xxh64_hexdigest(string)
+        return xxhash.xxh3_128_hexdigest(string)
 
     def parameter_names(self):
         return [i.name for i in self.parameter_parsers]
@@ -36,16 +37,23 @@ class FingerprintCounter:
     def string_representation(self, data):
         return {parser.name: parser.parse_from_json(data) for parser in self.parameter_parsers}
 
+    def params_to_hash(self, params):
+        param_string = ';'.join([Parameter.to_string(value) for value in params])
+        # param_string = str([Parameter.to_string(value) for value in params])
+        resulting_hash = self.get_hash(param_string)
+        print(resulting_hash, param_string)
+        return resulting_hash
+
+    # def distance(self, data, row, weights):
+    #     return np.sum(weights * (row == data))
+
+    def get_unstable_param_parsers(self):
+        return [i for i in self.parameter_parsers if i not in self.stable_param_parsers]
+
     def calculate_stable(self, data):
         params = self.get_stable_params(data)
-        param_string = str([Parameter.to_string(value) for value in params])
-        resulting_hash = self.get_hash(param_string)
-        print(resulting_hash, str(params))
-        return resulting_hash
+        return self.params_to_hash(params)
 
     def calculate(self, json_data):
         params = self._get_params(json_data)
-        param_string = str([Parameter.to_string(value) for value in params])
-        resulting_hash = self.get_hash(param_string)
-        print(resulting_hash, str(params))
-        return resulting_hash
+        return self.params_to_hash(params)

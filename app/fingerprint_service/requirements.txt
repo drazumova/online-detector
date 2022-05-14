@@ -9,3 +9,5 @@ infi.clickhouse_orm==1.0.4
 pika
 flask
 pyyaml==5.4.1
+numpy
+beautifulsoup4

@@ -12,11 +12,11 @@ class Parameter:
     @staticmethod
     def to_string(value):
         if value is None or not isinstance(value, Parameter):
-            return "None"
+            return ""
         return value.get_hash()
 
     def get_hash(self):
-        return xxhash.xxh64_hexdigest(str(self.value))
+        return xxhash.xxh3_128_hexdigest(str(self.value))
 
 
 class ParameterParser:
@@ -34,15 +34,16 @@ class ParameterParser:
 
 class JSParameterParser(ParameterParser):
     def parse_from_json(self, data):
-        if self.name not in data['components'].keys() or 'value' not in data['components'][self.name].keys():
+        # print(self.name, data.keys())
+        if self.name not in data.keys() or 'value' not in data[self.name].keys():
             return None
         return Parameter(self.get_value(data), self.name)
 
     def get_value(self, data):
         # print("getting", self.name, data['components'][self.name], flush=True)
-        return data['components'][self.name]['value']
+        return data[self.name]['value']
 
 
 class CanvasParameterParser(JSParameterParser):
     def get_value(self, data):
-        return data['components'][self.name]['value']['geometry']
+        return data[self.name]['value']['geometry']

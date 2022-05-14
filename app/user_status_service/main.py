@@ -1,7 +1,8 @@
 from statistics_manager import *
 from data_publisher import *
 import cherrypy
-# import simplejson
+import logging
+from bs4 import BeautifulSoup as bs
 
 
 @cherrypy.expose
@@ -11,40 +12,40 @@ class Main:
         self.id_service_conf = ConnectionConfigurationManager.create_service_conf()
         self.publisher = DataPublisher()
 
-    # def GET(self, id=None, *args, **post):
-    #     if id is None:
-    #         id = self.get_id(self.get_headers())
-    #     return self.manager.get_user_status(id).name
-    #
-    # def POST(self, id=None, *args, **post):
-    #     headers = self.get_headers()
-    #     if id is None:
-    #         id = self.get_id(headers)
-    #     self.manager.update_time(id)
-    #     self.publisher.publish(id, headers)
-    #
-    #     return "OK"
-
     @cherrypy.expose
     def index(self):
         index = open("/app/data/index.html").read()
-        print("In index")
+        logging.info("index")
         return index
 
     @cherrypy.expose
-    @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def update(self):
         data = cherrypy.request.json
         headers = self.get_headers()
-        params = {**data['components'], **headers}
-        # print("included fields", params.keys())
-        # print(params["components"].keys())
-        # print(params)
+        params = {**data, **headers}
+        logging.info("got data" + data)
         fp_id = self.get_id(params)
         status = self.manager.get_user_status(fp_id).name
-        self.manager.update_time(fp_id)
-        return status
+        name = self.manager.get_user_name(fp_id)
+        self.manager.update(fp_id, name)
+        if name is None:
+            page = open("/app/data/new_user.html").read()
+            soup = bs(page, 'html.parser')
+            title = soup.find("fingerprint")
+            title.text = fp_id
+            return soup.prettify("utf-8")
+        page = open("/app/data/welcome.html").read()
+        soup = bs(page, 'html.parser')
+        title = soup.find("title")
+        title.text.format(name)
+        return soup.prettify("utf-8")
+
+    @cherrypy.expose
+    def register(self):
+        name = cherrypy.request.params.get('name')
+        fp = cherrypy.request.params.get('fingerprint')
+        self.manager.update(fp, name)
 
     @staticmethod
     def get_headers():

@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 # RUN echo "nameserver 8.8.8.8" | tee /etc/resolv.conf > /dev/null && apt-get update

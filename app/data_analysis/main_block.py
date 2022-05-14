@@ -1,4 +1,6 @@
 import csv
+import logging
+
 import requests
 import json
 
@@ -30,30 +32,60 @@ def mapFP(row):
         'Remote-Addr': 'host',
         'timezone': 'timezone',
         'webGL_vendor': 'webGLVendor',
-        'webGL_renderer': 'webGLRenderer'
+        'webGL_renderer': 'webGLRenderer',
     }
     result = {}
     for key in names_map.keys():
         result[key] = {'value': row[names_map[key]]}
     result['canvas'] = {'value': {'geometry': row['canvas']}}
-    return {'components': result}
+    result['screenResolution'] = {'value': row['screen_width'] + 'x' + row['screen_width']}
+    logging.info("screenResolution:", result['screenResolution'])
+    return result
 
 
-def post_data(i, generated_ids):
+def post_data(i, generated_ids, fout):
     ids.add(i['_id'])
     data = mapFP(i)
-    print("DATA", data)
-    post_response = requests.post('http://192.168.39.68:30037', data=data, headers={'Content-Type': "application/json"})
-    print("RESPONSE", post_response, flush=True)
-    id = json.loads(post_response.text)['id']
+    post_response = requests.post('http://192.168.39.68:30037', data=json.dumps(data), headers={'Content-Type': "application/json"})
+    print(post_response.text, flush=True)
+    response = json.loads(json.loads(post_response.text))
+    id = response['id']
     generated_ids.append((id, i['_id']))
+    print(id, i['_id'], file=fout)
 
 
 if __name__ == '__main__':
     with open('fp-data.csv') as csvfile:
+        fout = open("out_6.txt", "w")
         reader = csv.DictReader(csvfile)
         ids = set()
         generated_ids = []
-        for i in [next(reader)]:
-            post_data(i, generated_ids)
-        print("generated_ids", "\n".join(generated_ids), sep="\n")
+        # print(reader.fieldnames)
+        cnt = 0
+        for i in reader:
+            # if cnt > 1:
+            #     break
+            post_data(i, generated_ids, fout)
+            cnt += 1
+
+        fp_cnt = len(set([a for (a, b) in generated_ids]))
+        true_fp_cnt = len(set([b for (a, b) in generated_ids]))
+        len = len(generated_ids)
+        print(fp_cnt, true_fp_cnt, len, file=fout)
+        tp = 0
+        fp = 0
+        tn = 0
+        fn = 0
+        fout.close()
+        # for (a_i, b_i) in generated_ids:
+        #     for (a_j, b_j) in generated_ids:
+        #         if b_i == b_j and a_i == a_j:
+        #             tp += 1
+        #         elif b_i == b_j and a_i != a_j:
+        #             fn += 1
+        #         elif b_i != b_j and a_i != a_j:
+        #             tn += 1
+        #         else:
+        #             fp += 1
+        # print("generated_ids", "\n".join(["{}, {}\n".format(a, b) for (a, b) in generated_ids]), sep="\n")
+        # print((tp + tn)/(tn + tp + fp + fn))
