@@ -11,9 +11,10 @@ class FingerprintServiceConnection:
         self.session = requests.Session()
 
     def get_id(self, headers):
-        print("headers = ", headers)
         url = "http://{}:{}".format(self.host, self.port)
-        data = {self.headers_key : headers}
-        response = self.session.post(url, data=json.dumps(data))
-        print("aaa", response.text)
-        return json.loads(response.text)['id']
+        response = self.session.post(url, data=json.dumps(headers),  headers={'Content-Type': "application/json"})
+        try:
+            return json.loads(json.loads(response.text))['id']
+        except ValueError as e:
+            print(e)
+            return {}

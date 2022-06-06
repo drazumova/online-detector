@@ -1,0 +1,44 @@
+<script>
+  function initFingerprintJS() {
+    const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
+    .then(FingerprintJS => FingerprintJS.load());
+
+    fpPromise
+      .then(fp => fp.get())
+      .then(result => {
+        const visitorId = result.visitorId;
+        console.log(visitorId);
+        document.writeln(visitorId);
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "/update", true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+            document.writeln(xhr.response);
+        }
+  }
+
+  const gl = document.createElement("canvas").getContext("webgl");
+  result.webGL_vendor = gl.getParameter(gl.VENDOR);
+  result.webGL_renderer = gl.getParameter(gl.RENDERER);
+
+  const ext = gl.getExtension("WEBGL_debug_renderer_info");
+  if (ext) {
+    result.webGL_vendor = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL);
+    result.webGL_renderer = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+  }
+
+  xhr.send(JSON.stringify(result));
+});
+  }
+  function main() {
+
+  }
+</script>
+<script
+  async
+  src="//cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"
+  onload="initFingerprintJS()"
+></script>
+
+<button onclick="initFingerprintJS()">Click</button>

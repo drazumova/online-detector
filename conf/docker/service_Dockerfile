@@ -1,9 +1,10 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update -y && apt-get install -y wget ca-certificates gnupg2 libpq-dev
+# RUN echo "nameserver 8.8.8.8" | tee /etc/resolv.conf > /dev/null && apt-get update
+RUN apt-get update -y && apt-get install -y apt-utils wget ca-certificates gnupg2 libpq-dev
 COPY fingerprint_service/requirements.txt requirements.txt
-RUN apt-get install -y python3-pip && pip3 install -r requirements.txt
+RUN apt-get update --fix-missing &&  apt-get install -y python3-pip && pip3 install -r requirements.txt
 
 
 COPY user_status_service/ app/

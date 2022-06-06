@@ -18,6 +18,9 @@ class StatisticsManager:
     def __init__(self):
         self._storage = DatabaseFactory.create_default()
 
+    def get_user_name(self, id):
+        return self._storage.get_username(id)
+
     def get_user_status(self, id):
         current_time = datetime.now()
         last_time = self._storage.get_user_time(id)
@@ -30,6 +33,6 @@ class StatisticsManager:
             return Status.AWAY
         return Status.OFFLINE
 
-    def update_time(self, id):
+    def update(self, id, name):
         current_time = datetime.now()
-        self._storage.upsert_user_time(id, current_time)
+        self._storage.upsert_user(id, current_time, name)

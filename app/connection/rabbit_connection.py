@@ -21,7 +21,6 @@ class RabbitConnection:
         self.channel.basic_publish(exchange="", routing_key=key, body=data)
     
     def start_consuming(self, key, callback):
-        print("Start")
         self.channel.basic_consume(queue=key, auto_ack=True, on_message_callback=callback)
         self.channel.start_consuming()
 

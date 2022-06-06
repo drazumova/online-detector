@@ -7,5 +7,10 @@ spec:
   selector:
     app: service
   ports:
-    - port: 80
+    - protocol: TCP
+      port: 80
       targetPort: 81
+      nodePort: 30036
+
+    # - port: 80
+    #   targetPort: 81

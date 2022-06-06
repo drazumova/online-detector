@@ -1,10 +1,13 @@
 cherrypy
 psycopg2-binary
 requests
-pyyaml
 xxhash
-redis
+redis==3.5.3
 redis-py-cluster
 clickhouse-driver[lz4]
 infi.clickhouse_orm==1.0.4
 pika
+flask
+pyyaml==5.4.1
+numpy
+BeautifulSoup4

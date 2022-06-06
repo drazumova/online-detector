@@ -6,6 +6,7 @@ import yaml
 
 class RedisConnection(DatabaseConnection):
     time_to_expire_s = 60
+    delimiter = "#"
 
     def __init__(self, host, port, db):
         start_up = [{"host": host, "port": port}]
@@ -16,10 +17,14 @@ class RedisConnection(DatabaseConnection):
         self._connection.exit()
 
     def add(self, key, value):
-        self._connection.set(key, value, ex=self.time_to_expire_s)
+        str_value = self.delimiter.join(value)
+        self._connection.set(key, str_value, ex=self.time_to_expire_s)
 
     def get(self, key):
-        return self._connection.get(key)
+        result = self._connection.get(key)
+        if result is not None:
+            return result.split(self.delimiter)
+        return result
 
 
 class RedisConnectionConfig(DatabaseConnectionConfig):
