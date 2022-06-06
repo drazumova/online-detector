@@ -10,7 +10,8 @@ class RedisDatabase(Database):
         self._database = database
     
     def _cache_user_time(self, id, time, name):
-        self._connection.add(id, (str(time), name))
+        print("trying to save", [str(time), name])
+        self._connection.add(id, [str(time), name])
 
     def upsert_user(self, id, time, name):
         self._cache_user_time(id, time, name)
@@ -18,7 +19,7 @@ class RedisDatabase(Database):
 
     def get_user_time(self, id):
         result = self._connection.get(id)
-        logging.info("redis db result" + result)
+        logging.info("redis db result", result)
         if result is None:
             logging.info("Cache miss", id)
             result = self._database.get_user_time(id)
@@ -26,11 +27,11 @@ class RedisDatabase(Database):
                 name = self._database.get_username(id)
                 self._cache_user_time(id, result, name)
             return result
-        return datetime.strptime(result.first, "%Y-%m-%d %H:%M:%S.%f")
+        return datetime.strptime(result[0], "%Y-%m-%d %H:%M:%S.%f")
 
     def get_username(self, id):
         result = self._connection.get(id)
-        logging.info("redis db result" + result)
+        logging.info("redis db result", result)
         if result is None:
             logging.info("Cache miss", id)
             result = self._database.get_username(id)
@@ -38,6 +39,6 @@ class RedisDatabase(Database):
                 time = self._database.get_user_time(id)
                 self._cache_user_time(id, time, result)
             return result
-        return result
+        return result[1]
 
 

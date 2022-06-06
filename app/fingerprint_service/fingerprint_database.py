@@ -22,7 +22,6 @@ class Database:
         connection.execute(request)
         result = connection.fetch()
         connection.close()
-        print("Database result", result)
         if result is None or len(result) != 1:
             return None
         return result
@@ -34,14 +33,12 @@ class Database:
         connection.execute(request)
         result = connection.fetch()
         connection.close()
-        # print("Database result", result)
         if result is None or len(result) != 1:
             return None
         return result[0]
 
     def add_value(self, fingerprint):
         connection = self._connection_factory.create_connection()
-        # print("Add value", fingerprint)
         request = ("INSERT INTO {}({}) VALUES ('{}');").format(self._fingerprint_table, self._fingerprint, fingerprint)
         connection.execute(request)
         connection.commit()

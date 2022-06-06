@@ -33,7 +33,7 @@ class FingerprintManager:
             logging.error("ERROR empty existing data")
             self._value_database.add(fp, data)
             fp = self._value_database.find_all_by_stable(fp, data)  # todo
-            logging.info('fp after add' + fp)
+            logging.info('fp after add',  fp)
             return fp
 
         return possible_fp

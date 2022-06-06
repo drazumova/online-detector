@@ -17,5 +17,5 @@ class Main:
         # if headers is None or FingerprintServiceConnection.headers_key not in headers.keys():
         #     return None
         # return json.dumps({'id': self.manager.get_id_with_closest(headers[FingerprintServiceConnection.headers_key])})
-        logging.info("FP service got headers" + headers)
+        logging.info("FP service got headers", headers)
         return json.dumps({'id': self.manager.get_id_with_closest(headers)})

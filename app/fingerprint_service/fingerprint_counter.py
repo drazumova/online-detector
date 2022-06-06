@@ -6,7 +6,7 @@ class FingerprintCounter:
     header_args = ['User-Agent', 'Accept-Language', 'Accept', 'Accept-Encoding', 'Dnt', 'Remote-Addr']
     js_args = ['fonts', 'domBlockers', 'fontPreferences', 'audio', 'screenFrame', 'osCpu', 'languages', 'colorDepth',
                'deviceMemory', 'screenResolution', 'hardwareConcurrency', 'timezone', 'sessionStorage', 'localStorage',
-               'indexedDB', 'openDatabase', 'cpuClass', 'platform', 'plugins', 'touchSupport', 'vendor',
+               'indexedDB', 'openDatabase', 'cpuClass', 'platform', 'touchSupport', 'vendor',
                'vendorFlavors', 'cookiesEnabled', 'colorGamut', 'invertedColors', 'forcedColors', 'monochrome',
                'contrast', 'reducedMotion', 'hdr', 'math', 'webGL_vendor', 'webGL_renderer']
     stable_params = ['osCpu', 'hardwareConcurrency', 'touchSupport', 'screenResolution', 'domBlockers',
@@ -18,6 +18,7 @@ class FingerprintCounter:
     def __init__(self):
         self.parameter_parsers = list(map(JSParameterParser, self.header_args)) \
                                  + list(map(JSParameterParser, self.js_args)) \
+                                 + [PluginsParameterParser('plugins')] \
                                  + [CanvasParameterParser('canvas')]
         self.stable_param_parsers = list(map(JSParameterParser, self.stable_params)) + [CanvasParameterParser('canvas')]
 
@@ -41,7 +42,6 @@ class FingerprintCounter:
         param_string = ';'.join([Parameter.to_string(value) for value in params])
         # param_string = str([Parameter.to_string(value) for value in params])
         resulting_hash = self.get_hash(param_string)
-        print(resulting_hash, param_string)
         return resulting_hash
 
     # def distance(self, data, row, weights):

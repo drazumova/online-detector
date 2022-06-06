@@ -10,4 +10,4 @@ pika
 flask
 pyyaml==5.4.1
 numpy
-beautifulsoup4
+BeautifulSoup4

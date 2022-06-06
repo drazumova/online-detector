@@ -1,3 +1,5 @@
+import logging
+
 import xxhash
 
 
@@ -34,16 +36,24 @@ class ParameterParser:
 
 class JSParameterParser(ParameterParser):
     def parse_from_json(self, data):
-        # print(self.name, data.keys())
-        if self.name not in data.keys() or 'value' not in data[self.name].keys():
+        if self.name not in data['components'].keys() or 'value' not in data['components'][self.name].keys():
             return None
         return Parameter(self.get_value(data), self.name)
 
     def get_value(self, data):
-        # print("getting", self.name, data['components'][self.name], flush=True)
-        return data[self.name]['value']
+        return data['components'][self.name]['value']
 
 
 class CanvasParameterParser(JSParameterParser):
     def get_value(self, data):
-        return data[self.name]['value']['geometry']
+        return data['components'][self.name]['value']['geometry']
+
+
+class PluginsParameterParser(JSParameterParser):
+    def get_value(self, data):
+        all = data['components'][self.name]['value']
+        names = []
+        for plugin_def in all:
+            names.append(plugin_def["name"])
+        logging.info("got plugin names", names)
+        return ",".join(names)

@@ -13,7 +13,7 @@ class Database:
 
     def init_table(self):
         connection = self._connection_factory.create_connection()
-        request = ("CREATE TABLE IF NOT EXISTS {} ({} int UNIQUE, {} timestamp, {} username)")\
+        request = ("CREATE TABLE IF NOT EXISTS {} ({} int UNIQUE, {} timestamp, {} text)")\
             .format(self._user_oline_table, self._id, self._time, self._name)
         connection.execute(request)
         connection.commit()
@@ -21,9 +21,10 @@ class Database:
     
     def upsert_user(self, id, time, name):
         connection = self._connection_factory.create_connection()
-        request = ("INSERT INTO {0}({4}, {3}) VALUES({1}, timestamp '{2}')" +
-        " ON CONFLICT ({4}) DO UPDATE SET {3} = EXCLUDED.{3};")\
+        request = ("INSERT INTO {0}({5}, {4}, {6}) VALUES({1}, timestamp '{2}', '{3}')" +
+        " ON CONFLICT ({5}) DO UPDATE SET {4} = EXCLUDED.{4};")\
             .format(self._user_oline_table, id, time, name, self._time, self._id, self._name)
+        print("formulate request", request)
         connection.execute(request)
         connection.commit()
         connection.close()
@@ -37,7 +38,7 @@ class Database:
         if result is None:
             return None
         if len(result) != 1:
-            logging.error("Error on getting select result", result)
+            # logging.error("Error on getting select result", result)
             return None
         return result[0][0]
 
@@ -50,6 +51,6 @@ class Database:
         if result is None:
             return None
         if len(result) != 1:
-            logging.error("Error on getting select result", result)
+            # logging.error("Error on getting select result", result)
             return None
         return result[0][0]

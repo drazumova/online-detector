@@ -24,28 +24,42 @@ class Main:
         data = cherrypy.request.json
         headers = self.get_headers()
         params = {**data, **headers}
-        logging.info("got data" + data)
+        logging.info("got data", data)
         fp_id = self.get_id(params)
+        if fp_id is None:
+            return "Ошибочка, не смогли посчитать"
         status = self.manager.get_user_status(fp_id).name
-        name = self.manager.get_user_name(fp_id)
-        self.manager.update(fp_id, name)
-        if name is None:
-            page = open("/app/data/new_user.html").read()
-            soup = bs(page, 'html.parser')
-            title = soup.find("fingerprint")
-            title.text = fp_id
-            return soup.prettify("utf-8")
+        self.manager.update(fp_id, data['visitorId'])
+        return status
+        # name = self.manager.get_user_name(fp_id)
+        # if name is None:
+        #     return self.new_user_response(fp_id)
+        # self.manager.update(fp_id, name)
+        # return self.old_friend_response(fp_id, name)
+
+
+
+    def new_user_response(self, fp_id):
+        page = open("/app/data/new_user.html").read()
+        soup = bs(page, 'html.parser')
+        title = soup.find(id="fingerprint")
+        title.attrs['value'] = fp_id
+        return soup.prettify("utf-8")
+
+    def old_friend_response(self, fp_id, name):
         page = open("/app/data/welcome.html").read()
         soup = bs(page, 'html.parser')
-        title = soup.find("title")
+        title = soup.find(id="title")
         title.text.format(name)
         return soup.prettify("utf-8")
 
     @cherrypy.expose
-    def register(self):
-        name = cherrypy.request.params.get('name')
-        fp = cherrypy.request.params.get('fingerprint')
-        self.manager.update(fp, name)
+    def register(self, username, fingerprint):
+        # body = json.loads(cherrypy.request.json)
+        # name = body['name']
+        # fp = body['fingerprint']
+        self.manager.update(fingerprint, username)
+        return "Добавили!"
 
     @staticmethod
     def get_headers():

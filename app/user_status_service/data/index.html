@@ -1,13 +1,14 @@
 <script>
   function initFingerprintJS() {
-    const fpPromise = FingerprintJS.load();
+    const fpPromise = import('https://openfpcdn.io/fingerprintjs/v3')
+    .then(FingerprintJS => FingerprintJS.load());
 
     fpPromise
       .then(fp => fp.get())
       .then(result => {
         const visitorId = result.visitorId;
-        document.writeln("HAHA");
-        document.writeln(result);
+        console.log(visitorId);
+        document.writeln(visitorId);
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "/update", true);
         xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -36,20 +37,8 @@
 </script>
 <script
   async
-    src="https://openfpcdn.io/fingerprintjs/v3"
-onload="initFingerprintJS()"
+  src="//cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"
+  onload="initFingerprintJS()"
 ></script>
 
-<!--  src="//cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"-->
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
-    <button onclick="initFingerprintJS()">Click</button>
-</body>
-</html>
+<button onclick="initFingerprintJS()">Click</button>

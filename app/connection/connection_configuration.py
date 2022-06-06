@@ -30,7 +30,6 @@ class DatabaseConnectionConfig(ConnectionConfig):
         super(DatabaseConnectionConfig, self).__init__(filename)
         with open(filename, 'r') as config: 
             args = yaml.load(config)
-            print(args)
             self.username = args['username']
 
     def create_connection(self):

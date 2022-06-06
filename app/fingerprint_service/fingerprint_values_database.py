@@ -59,7 +59,6 @@ class ValuesDatabase:
         function = ("CREATE FUNCTION distance({}) RETURNS real " + \
                     "AS 'SELECT {};' LANGUAGE SQL IMMUTABLE RETURNS NULL ON NULL INPUT;") \
             .format(function_params, function_value)
-        print("constructed function = ", function)
         all_columns = ", ".join(self.params)
         select_statement = ""
         query = "SELECT {} FROM {} ORDER BY distance({}) LIMIT {}".format(select_statement, self._fingerprint_table,
@@ -69,7 +68,6 @@ class ValuesDatabase:
         connection.execute(request)
         result = connection.fetch()
         connection.close()
-        print("result", result)
         if result is None or len(result) < 1:
             return None
 
@@ -78,12 +76,11 @@ class ValuesDatabase:
     def closest_for(self, data, result):
         weights = np.array([0] + self._weights)
         current = np.array([0] + [Parameter.to_string(i.parse_from_json(data)) for i in self._unstable_parsers])
-        print("result closest", current, flush=True)
-        distances = np.dot((np.array(result) == current), weights)
+        if current.shape[0] > weights.shape[0]:
+            weights = np.append(weights, np.ones(current.shape[0] - weights.shape[0]))
+        distances = np.dot((np.array(result) != current), weights)
         index = np.argmin(distances)
-        print("closest index", index, flush=True)
-        print("closet values", result[index])
-        if distances[index] > 1:
+        if distances[index] > 2:
             return None
         return result[index][0]
 
